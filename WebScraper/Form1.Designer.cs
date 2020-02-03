@@ -63,7 +63,6 @@
             this.txtURL.Name = "txtURL";
             this.txtURL.Size = new System.Drawing.Size(649, 23);
             this.txtURL.TabIndex = 2;
-            this.txtURL.TextChanged += new System.EventHandler(this.txtURL_TextChanged);
             // 
             // label1
             // 
