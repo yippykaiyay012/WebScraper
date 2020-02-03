@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
@@ -110,27 +111,14 @@ namespace WebScraper
         private void CustomClean(IElement result)
         {
 
-            var courseTitle = result.InnerHtml.Replace("<h3 itemprop=\"name\">", "")
-                .Replace("h3>< a class=\"studentHeaderLink\" href=\"", "")
-                .Replace("</h3>", "")
-                .Replace("\n", "")
-                .Trim();
-
-            var courseUrl = result.OuterHtml.Replace("<a class=\"studentHeaderLink\" href=\"", "")
-                .Replace("\" title=\"", "")
-                .Replace("\" itemprop=\"url\">\n","")
-                .Replace("<h3 itemprop=\"name\">","")
-                .Replace("</h3>\n","")
-                .Replace("</a>","")
-                .Replace(courseTitle,"");
-
+            var courseTitle = ((AngleSharp.Html.Dom.HtmlElement)result).Title;
+            var courseUrl = result.GetAttribute("href");
 
             Results.Add(new Result
             {
                 CourseName = courseTitle,
                 CourseURL = baseURL + courseUrl
             });
-
 
             resultBuilder.Append("CourseTitle: " + courseTitle);
             resultBuilder.AppendLine();
@@ -145,7 +133,7 @@ namespace WebScraper
         private void WriteToCSV(List<Result> results)
         {
             using (var writer = new StreamWriter(outputFilePath))
-            using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
+            using (var csv = new CsvWriter(writer, CultureInfo.CurrentCulture))
             {
                 csv.WriteRecords(results);
             }
@@ -155,7 +143,13 @@ namespace WebScraper
 
         private void btnOpenCSV_Click(object sender, EventArgs e)
         {
-           // System.Diagnostics.Process.Start(outputFilePath);
+            //System.Diagnostics.Process.Start(outputFilePath);
+            var p = new Process();
+            p.StartInfo = new ProcessStartInfo(outputFilePath)
+            {
+                UseShellExecute = true
+            };
+            p.Start();
         }
     }
 }
